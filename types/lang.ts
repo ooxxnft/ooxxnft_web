@@ -1,0 +1,1 @@
+export const LangConnectWallet = "Please Connect Polygon Wallet!";

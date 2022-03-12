@@ -1,0 +1,75 @@
+.overlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    /* background-color: rgb(0, 0, 0); */
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+.overlay_content {
+    height: 100%;
+    display: flex;
+    /* padding: 5px; */
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+}
+
+.overlay_arrow {
+    margin: 0%;
+    /* background-color: hotpink; */
+    /* flex-grow:0;
+    flex-shrink:1;
+    flex-basis: 10%; */
+    flex: 1;
+    width: 10%;
+    /* height: 100%; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+    font-size: 2rem;
+}
+
+.overlay_photo {
+    margin: 0%;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: gray;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+}
+
+.overlay_photo svg {
+    height: 660px;
+}
+
+
+.overlay_photo .date {
+    margin-top: 10px;
+    color: white;
+    font-size: 2rem;
+}
+
+.overlay h1:hover,
+.overlay h1:focus {
+    color: white;
+    cursor: pointer;
+}
+
+.overlay_closebtn {
+    text-align: right;
+    color: gray;
+
+    font-size: 3rem;
+    cursor: pointer;
+}
+

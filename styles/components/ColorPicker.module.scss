@@ -1,0 +1,28 @@
+.picker {
+    width: 200px;
+    background: #b4b4c0;
+    border-radius: 9px;
+}
+
+.picker__swatches {
+    display: flex;
+    padding: 12px;
+    flex-wrap: wrap;
+}
+
+.picker__swatch {
+    width: 24px;
+    height: 24px;
+    margin: 4px;
+    border: none;
+    padding: 0;
+    border-radius: 4px;
+    cursor: pointer;
+    outline: none;
+}
+
+.picker__value {
+    border-left: 24px solid #000;
+    padding-left: 10px;
+    margin-top: 20px;
+}
