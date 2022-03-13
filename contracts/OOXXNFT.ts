@@ -22,11 +22,13 @@ export interface OOXXNFTInterface extends utils.Interface {
   functions: {
     "approve(address,uint256)": FunctionFragment;
     "balanceOf(address)": FunctionFragment;
+    "contractURI()": FunctionFragment;
     "gameLen()": FunctionFragment;
     "getApproved(uint256)": FunctionFragment;
     "getGame(uint256)": FunctionFragment;
     "getIsEnd(uint256)": FunctionFragment;
     "getPreMark(uint256)": FunctionFragment;
+    "initialize(address)": FunctionFragment;
     "isApprovedForAll(address,address)": FunctionFragment;
     "name()": FunctionFragment;
     "newGame(uint8,bool,uint24)": FunctionFragment;
@@ -36,16 +38,14 @@ export interface OOXXNFTInterface extends utils.Interface {
     "renounceOwnership()": FunctionFragment;
     "safeTransferFrom(address,address,uint256)": FunctionFragment;
     "setApprovalForAll(address,bool)": FunctionFragment;
+    "setContractURI(string)": FunctionFragment;
     "setIconsContract(address)": FunctionFragment;
     "setSeed(uint256)": FunctionFragment;
     "setSeed1(uint256)": FunctionFragment;
     "setSeed2(uint256)": FunctionFragment;
     "supportsInterface(bytes4)": FunctionFragment;
     "symbol()": FunctionFragment;
-    "tokenByIndex(uint256)": FunctionFragment;
-    "tokenOfOwnerByIndex(address,uint256)": FunctionFragment;
     "tokenURI(uint256)": FunctionFragment;
-    "totalSupply()": FunctionFragment;
     "transferFrom(address,address,uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
   };
@@ -55,6 +55,10 @@ export interface OOXXNFTInterface extends utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "balanceOf", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "contractURI",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "gameLen", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "getApproved",
@@ -72,6 +76,7 @@ export interface OOXXNFTInterface extends utils.Interface {
     functionFragment: "getPreMark",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "initialize", values: [string]): string;
   encodeFunctionData(
     functionFragment: "isApprovedForAll",
     values: [string, string]
@@ -103,6 +108,10 @@ export interface OOXXNFTInterface extends utils.Interface {
     values: [string, boolean]
   ): string;
   encodeFunctionData(
+    functionFragment: "setContractURI",
+    values: [string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setIconsContract",
     values: [string]
   ): string;
@@ -124,20 +133,8 @@ export interface OOXXNFTInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "tokenByIndex",
-    values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "tokenOfOwnerByIndex",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "tokenURI",
     values: [BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "totalSupply",
-    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
@@ -150,6 +147,10 @@ export interface OOXXNFTInterface extends utils.Interface {
 
   decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "balanceOf", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "contractURI",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "gameLen", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getApproved",
@@ -158,6 +159,7 @@ export interface OOXXNFTInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getGame", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getIsEnd", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getPreMark", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isApprovedForAll",
     data: BytesLike
@@ -180,6 +182,10 @@ export interface OOXXNFTInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setContractURI",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setIconsContract",
     data: BytesLike
   ): Result;
@@ -191,19 +197,7 @@ export interface OOXXNFTInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "symbol", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "tokenByIndex",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "tokenOfOwnerByIndex",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "tokenURI", data: BytesLike): Result;
-  decodeFunctionResult(
-    functionFragment: "totalSupply",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(
     functionFragment: "transferFrom",
     data: BytesLike
@@ -216,7 +210,7 @@ export interface OOXXNFTInterface extends utils.Interface {
   events: {
     "Approval(address,address,uint256)": EventFragment;
     "ApprovalForAll(address,address,bool)": EventFragment;
-    "GameUpdate(uint256,string)": EventFragment;
+    "GameUpdate(uint256,string,address)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
     "Transfer(address,address,uint256)": EventFragment;
   };
@@ -243,8 +237,8 @@ export type ApprovalForAllEvent = TypedEvent<
 export type ApprovalForAllEventFilter = TypedEventFilter<ApprovalForAllEvent>;
 
 export type GameUpdateEvent = TypedEvent<
-  [BigNumber, string],
-  { gameID: BigNumber; info: string }
+  [BigNumber, string, string],
+  { gameID: BigNumber; info: string; adr: string }
 >;
 
 export type GameUpdateEventFilter = TypedEventFilter<GameUpdateEvent>;
@@ -300,6 +294,8 @@ export interface OOXXNFT extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    contractURI(overrides?: CallOverrides): Promise<[string]>;
+
     gameLen(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getApproved(
@@ -321,6 +317,11 @@ export interface OOXXNFT extends BaseContract {
       gameID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[boolean]>;
+
+    initialize(
+      adr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     isApprovedForAll(
       owner: string,
@@ -377,6 +378,11 @@ export interface OOXXNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setContractURI(
+      contractURI_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setIconsContract(
       adr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -404,23 +410,10 @@ export interface OOXXNFT extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<[string]>;
 
-    tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    tokenOfOwnerByIndex(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
-
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     transferFrom(
       from: string,
@@ -443,6 +436,8 @@ export interface OOXXNFT extends BaseContract {
 
   balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  contractURI(overrides?: CallOverrides): Promise<string>;
+
   gameLen(overrides?: CallOverrides): Promise<BigNumber>;
 
   getApproved(
@@ -458,6 +453,11 @@ export interface OOXXNFT extends BaseContract {
   getIsEnd(gameID: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
 
   getPreMark(gameID: BigNumberish, overrides?: CallOverrides): Promise<boolean>;
+
+  initialize(
+    adr: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   isApprovedForAll(
     owner: string,
@@ -511,6 +511,11 @@ export interface OOXXNFT extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setContractURI(
+    contractURI_: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setIconsContract(
     adr: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -538,20 +543,7 @@ export interface OOXXNFT extends BaseContract {
 
   symbol(overrides?: CallOverrides): Promise<string>;
 
-  tokenByIndex(
-    index: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  tokenOfOwnerByIndex(
-    owner: string,
-    index: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
   transferFrom(
     from: string,
@@ -574,6 +566,8 @@ export interface OOXXNFT extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    contractURI(overrides?: CallOverrides): Promise<string>;
+
     gameLen(overrides?: CallOverrides): Promise<BigNumber>;
 
     getApproved(
@@ -592,6 +586,8 @@ export interface OOXXNFT extends BaseContract {
       gameID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<boolean>;
+
+    initialize(adr: string, overrides?: CallOverrides): Promise<void>;
 
     isApprovedForAll(
       owner: string,
@@ -643,6 +639,11 @@ export interface OOXXNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
+    setContractURI(
+      contractURI_: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     setIconsContract(adr: string, overrides?: CallOverrides): Promise<void>;
 
     setSeed(s: BigNumberish, overrides?: CallOverrides): Promise<void>;
@@ -658,20 +659,7 @@ export interface OOXXNFT extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<string>;
 
-    tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    tokenOfOwnerByIndex(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(tokenId: BigNumberish, overrides?: CallOverrides): Promise<string>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: string,
@@ -709,11 +697,12 @@ export interface OOXXNFT extends BaseContract {
       approved?: null
     ): ApprovalForAllEventFilter;
 
-    "GameUpdate(uint256,string)"(
+    "GameUpdate(uint256,string,address)"(
       gameID?: null,
-      info?: null
+      info?: null,
+      adr?: null
     ): GameUpdateEventFilter;
-    GameUpdate(gameID?: null, info?: null): GameUpdateEventFilter;
+    GameUpdate(gameID?: null, info?: null, adr?: null): GameUpdateEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: string | null,
@@ -745,6 +734,8 @@ export interface OOXXNFT extends BaseContract {
 
     balanceOf(owner: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+    contractURI(overrides?: CallOverrides): Promise<BigNumber>;
+
     gameLen(overrides?: CallOverrides): Promise<BigNumber>;
 
     getApproved(
@@ -765,6 +756,11 @@ export interface OOXXNFT extends BaseContract {
     getPreMark(
       gameID: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    initialize(
+      adr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     isApprovedForAll(
@@ -822,6 +818,11 @@ export interface OOXXNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setContractURI(
+      contractURI_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setIconsContract(
       adr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -849,23 +850,10 @@ export interface OOXXNFT extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<BigNumber>;
 
-    tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    tokenOfOwnerByIndex(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
 
     transferFrom(
       from: string,
@@ -892,6 +880,8 @@ export interface OOXXNFT extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    contractURI(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     gameLen(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getApproved(
@@ -912,6 +902,11 @@ export interface OOXXNFT extends BaseContract {
     getPreMark(
       gameID: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    initialize(
+      adr: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     isApprovedForAll(
@@ -969,6 +964,11 @@ export interface OOXXNFT extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
+    setContractURI(
+      contractURI_: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     setIconsContract(
       adr: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -996,23 +996,10 @@ export interface OOXXNFT extends BaseContract {
 
     symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    tokenByIndex(
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    tokenOfOwnerByIndex(
-      owner: string,
-      index: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
     tokenURI(
       tokenId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
-
-    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     transferFrom(
       from: string,
