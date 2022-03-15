@@ -1,6 +1,6 @@
 
 module.exports = {
     env: {
-        NETWORK: 'mumbai',
+        NETWORK: 'polygon',
     },
 }
