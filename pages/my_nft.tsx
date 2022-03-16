@@ -1,8 +1,7 @@
 // Imports
 import Layout from "@components/Layout"; // Layout wrapper
 import GameCardPanel from "@components/GameCardPanel";
-import { useBlockNumber } from 'hooks/useBlockContext';
-import { ReactElement, useRef, useState, useEffect } from "react";
+import { ReactElement, useState, useEffect } from "react";
 import { useWalletContext } from 'hooks/useWalletContext';
 import { useTopAlert } from '@components/TopAlert'
 
@@ -13,7 +12,6 @@ import { LangConnectWallet } from 'types/lang'
 
 export default function EndGames(): ReactElement {
   const [tokenIdAry, setTokenIdAry] = useState<number[]>([]);
-  const block = useBlockNumber();
   const { account } = useWalletContext();
   const { setAndShowTopAlert } = useTopAlert();
   // fetch isEnd
@@ -43,13 +41,12 @@ export default function EndGames(): ReactElement {
       });
 
       mtokenIdAry = mtokenIdAry.sort((a, b) => b - a);
-      // console.log("set new my_nft tokenIdAry:", mtokenIdAry);
       setTokenIdAry(mtokenIdAry);
 
     };
 
     fetchAccountNFT(account);
-  }, [account, block]);
+  }, [account]);
 
 
   return (
@@ -58,7 +55,7 @@ export default function EndGames(): ReactElement {
       <div id="my_nft" className="bg-black  sm:py-5 pb-40 ">
         <div className="container mx-auto ">
           <div className="flex justify-around">
-            <h1 className="text-center mt-4 capitalize">My NFT</h1>
+            <h1 className="text-center mt-4 capitalize">My NFTs</h1>
           </div>
           <GameCardPanel tokenIdAry={tokenIdAry} canPlay={false} showTokenId={-1} />
         </div>
